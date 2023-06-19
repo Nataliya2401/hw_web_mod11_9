@@ -75,8 +75,7 @@ if __name__ == '__main__':
     quotes, authors = get_data(urls_for_page)
     # for q in quotes:
     #     print(q)
-    for a in authors:
-        print(a)
+ 
     with open('quotes.json', 'w', encoding='utf-8') as file:
         json.dump(quotes, file, ensure_ascii=False)
     with open('authors.json', 'w', encoding='utf-8') as file:
