@@ -22,11 +22,11 @@ def about_author(url):
     response = requests.get(base_url + url)
     soup = BeautifulSoup(response.text, 'html.parser')
     date = soup.find('span', attrs={"class": "author-born-date"}).text
-    try:
-        date = datetime.strptime(date, "%B %d, %Y").isoformat()
-    except ValueError:
-        print("Error date")
-        pass
+    # try:
+    #     date = datetime.strptime(date, "%B %d, %Y").isoformat()
+    # except ValueError:
+    #     print("Error date")
+    #     pass
     description = soup.find('div', attrs={"class": "author-description"}).text
     description = description.strip("\n").strip()
     born_location = soup.find('span', attrs={"class": "author-born-location"}).text
@@ -54,12 +54,18 @@ def get_data(urls):
             if name_author not in NAMES_AUTHORS:
                 author = {}
                 NAMES_AUTHORS.add(name_author)
-                author["fullname"] = name_author
+                # author["fullname"] = name_author
                 author_url = q.find('a')["href"]
                 result = about_author(author_url)
-                author['born_date'] = result['born_date']
-                author['description'] = result['description']
-                authors.append(author)
+                # author['born_date'] = result['born_date']
+                # author['description'] = result['description']
+                # authors.append(author)
+                authors.append({
+                    'fullname': name_author,
+                    'born_date': result['born_date'],
+                    'born_location': result['born_location'],
+                    'description': result['description']
+                })
             quotes.append(quote)
     return quotes, authors
 
@@ -67,12 +73,14 @@ def get_data(urls):
 if __name__ == '__main__':
     urls_for_page = get_urls()
     quotes, authors = get_data(urls_for_page)
-    for q in quotes:
-        print(q)
+    # for q in quotes:
+    #     print(q)
     for a in authors:
         print(a)
-    # with open('index.html', 'w', encoding='utf-8') as file:
-    #     file.write(response.text)
+    with open('quotes.json', 'w', encoding='utf-8') as file:
+        json.dump(quotes, file, ensure_ascii=False)
+    with open('authors.json', 'w', encoding='utf-8') as file:
+        json.dump(authors, file, ensure_ascii=False)
 
     # spider(urls_for_parsing)
 
