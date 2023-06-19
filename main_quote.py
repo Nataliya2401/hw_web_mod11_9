@@ -42,15 +42,13 @@ def get_data(urls):
         soup = BeautifulSoup(response.text, 'html.parser')
         quotes_div = soup.find_all('div', {"class": "quote"})
         for q in quotes_div:
-            tagsforquote = []
-            quote = {}
-            quote["quote"] = q.find('span', attrs={"class": "text"}).string
+            quote = q.find('span', attrs={"class": "text"}).string
             name_author = q.find('small', attrs={"class": "author"}).string
-            tags = q.find_all('a', attrs={"tag"})
-            for t in tags:
-                tagsforquote.append(t.text)
-            quote["author"] = name_author
-            quote["tags"] = tagsforquote
+            tags_for_quote = [t.text for t in q.find_all('a', attrs={"tag"})]
+            quotes.append({
+                'quote': quote,
+                'author': name_author,
+                'tags': tags_for_quote})
             if name_author not in NAMES_AUTHORS:
                 author = {}
                 NAMES_AUTHORS.add(name_author)
@@ -66,16 +64,16 @@ def get_data(urls):
                     'born_location': result['born_location'],
                     'description': result['description']
                 })
-            quotes.append(quote)
+            # quotes.append(quote)
     return quotes, authors
 
 
 if __name__ == '__main__':
     urls_for_page = get_urls()
     quotes, authors = get_data(urls_for_page)
-    # for q in quotes:
-    #     print(q)
- 
+    for q in quotes:
+        print(q)
+
     with open('quotes.json', 'w', encoding='utf-8') as file:
         json.dump(quotes, file, ensure_ascii=False)
     with open('authors.json', 'w', encoding='utf-8') as file:
